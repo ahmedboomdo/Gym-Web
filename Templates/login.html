@@ -1,0 +1,17 @@
+{%extends 'layout.html'%}
+{%block content%}
+<div>
+    <h1>Login</h1>
+    <h4>It's free and only takes a minute</h4>
+    <!-- following code sourced from https://www.youtube.com/watch?v=-1oE7CWweIE-->
+    <form>
+        <label> User Name</label>
+        <!-- Hinting what the expected value is. And creating a placeholder -->
+        <input type ="text" placeholder=" ">
+        <label> Password </label>
+        <input type ="text" placeholder=" ">
+        <input type = "button" value="Submit" >
+    </form>
+    <p>Don't have an account?<a href = '#'>Signup here</a><p>
+</div>
+{%endblock%}

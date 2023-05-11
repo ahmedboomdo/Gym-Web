@@ -1,4 +1,15 @@
-{% include "header.html" %}
-{% include "nav.html" %}
-{% block content %}{% endblock %}
-{% include "footer.html" %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{title}}</title>
+    </head>
+    <body>
+        <nav>
+            {% include "nav.html" %}
+        </nav>
+
+        {% block content %}{% endblock %}
+
+        
+    </body>
+</html>
