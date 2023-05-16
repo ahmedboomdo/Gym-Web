@@ -13,7 +13,8 @@ def add_item(table_name, connection, add_name, add_password):
     cursor.execute(sql,(add_name, add_password))
     connection.commit()
 
-
+with sqlite3.connect(DATABASE_FILE) as connection:
+    add_item('User', connection, 'ahmed', '1233824')
 
 app = Flask(__name__)
 
