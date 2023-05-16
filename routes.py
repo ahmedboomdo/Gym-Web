@@ -2,6 +2,9 @@ from flask import Flask, render_template
 import sqlite3
 #preformed all imports
 
+#variables
+DATABASE_FILE = "Database\gym-database.db"
+
 #creating functions
 def add_item(table_name, connection, add_name, add_password):
     '''Add items to database'''
@@ -34,6 +37,10 @@ def signup():
 @app.route("/login")
 def login():
     return render_template("login.html",title = "Log in")
+
+@app.route("/data")
+def data():
+    return render_template("login.html",title = "shhh")
 
 
 if __name__ == '__main__':

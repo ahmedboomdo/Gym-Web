@@ -4,16 +4,16 @@
     <h1>Sign Up</h1>
     <h4>It's free and only takes a minute</h4>
     <!-- following code sourced from https://www.youtube.com/watch?v=-1oE7CWweIE-->
-    <form>
+    <form action="/add_data">
         <label> User Name</label>
         <!-- Hinting what the expected value is. And creating a placeholder -->
-        <input type ="text" placeholder=" ">
+        <input type ="text" placeholder=" "><br>
         <label> Password </label>
-        <input type ="text" placeholder=" ">
+        <input type ="text" placeholder=" "><br>
         <label> Confirm Password </label>
-        <input type ="text" placeholder=" ">
+        <input type ="text" placeholder=" "><br>
         <input type = "button" value="Submit" >
     </form>
-    <p>Already have an account?<a href = '#'>Login here</a><p>
+    <p>Already have an account?<a href = '/login'>Login here</a><p>
 </div>
 {%endblock%}
