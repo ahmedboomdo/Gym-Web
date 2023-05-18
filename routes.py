@@ -6,7 +6,7 @@ import sqlite3
 DATABASE_FILE = "Database\gym-database.db"
 
 #creating functions
-def add_item(table_name, connection, add_name, add_password):
+def add_user(table_name, connection, add_name, add_password):
     '''Add items to database'''
     #connect the cursor
     cursor = connection.cursor()
@@ -17,7 +17,7 @@ def add_item(table_name, connection, add_name, add_password):
     connection.commit()
 
 with sqlite3.connect(DATABASE_FILE) as connection:
-    add_item('User', connection, 'ahmed', '1233824')
+    pass
 
 app = Flask(__name__)
 
@@ -38,7 +38,7 @@ def signup():
 def login():
     return render_template("login.html",title = "Log in")
 
-@app.route("/data")
+@app.route("/add_data")
 def data():
     return render_template("login.html",title = "shhh")
 
