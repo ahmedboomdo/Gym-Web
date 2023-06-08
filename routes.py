@@ -29,9 +29,14 @@ def home():
 
 
 #creating a route to signup and login pages
-@app.route("/signup")
+@app.route("/signup", methods = ['POST','GET'])
 def signup():
-    return render_template("signup.html",title = "Sign up")
+  formstuff = None
+  if len(request.args) > 0:
+    formstuff = []
+    formstuff.append(request.args.get('username'))
+    formstuff.append(request.args.get('password'))
+  return render_template('about.html', formstuff=formstuff)
 
 
 @app.route("/login")
