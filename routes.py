@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import sqlite3
 #preformed all imports
 
@@ -29,22 +29,25 @@ def home():
 
 
 #creating a route to signup and login pages
-@app.route("/signup", methods = ['POST','GET'])
+@app.route("/signup")
 def signup():
-  formstuff = None
+  form = None
   if len(request.args) > 0:
-    formstuff = []
-    formstuff.append(request.args.get('username'))
-    formstuff.append(request.args.get('password'))
-  return render_template('about.html', formstuff=formstuff)
+    form = []
+    form.append(request.args.get('username'))
+    form.append(request.args.get('password'))
+  return render_template('signup.html', form=form)
+  print(form)
+
 
 
 @app.route("/login")
 def login():
     return render_template("login.html",title = "Log in")
 
-@app.route("/add_data")
+@app.route("/add_user")
 def data():
+    add_user("User", connection, form[0], form[1])
     return render_template("login.html",title = "shhh")
 
 
