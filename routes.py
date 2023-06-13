@@ -4,10 +4,12 @@ import sqlite3
 
 #variables
 DATABASE_FILE = "Database\gym-database.db"
+form = None
 
 #creating functions
-def add_user(table_name, connection, add_name, add_password):
+def add_user(table_name,connection, add_name, add_password):
     '''Add items to database'''
+    connection = sqlite3.connect(DATABASE_FILE)
     #connect the cursor
     cursor = connection.cursor()
     #SQL statment 
@@ -31,13 +33,7 @@ def home():
 #creating a route to signup and login pages
 @app.route("/signup")
 def signup():
-  form = None
-  if len(request.args) > 0:
-    form = []
-    form.append(request.args.get('username'))
-    form.append(request.args.get('password'))
-  return render_template('signup.html', form=form)
-  print(form)
+    return render_template('signup.html')
 
 
 
@@ -47,7 +43,10 @@ def login():
 
 @app.route("/add_user")
 def data():
-    add_user("User", connection, form[0], form[1])
+    username = request.args.get('username')
+    password = request.args.get('password')
+    print(username, password, connection)
+    add_user("User", connection, username, password)
     return render_template("login.html",title = "shhh")
 
 
