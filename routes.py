@@ -33,7 +33,7 @@ def home():
 #creating a route to signup and login pages
 @app.route("/signup")
 def signup():
-    return render_template('signup.html')
+    return render_template('signup.html',title = "Sign in")
 
 
 
@@ -47,8 +47,21 @@ def data():
     password = request.args.get('password')
     print(username, password, connection)
     add_user("User", connection, username, password)
-    return render_template("login.html",title = "shhh")
+    return render_template("login.html",title = "Log in")
 
 
 if __name__ == '__main__':
     app.run(debug = True)
+
+@app.route('/User/<int.id>')
+def User(id):
+    connection = sqlite3.connect(DATABASE_FILE)
+    #connect the cursor
+    cursor = connection.cursor()
+    #SQL statment 
+    sql = ('SELECT name FROM pizza where id=?')(id)
+    #execute the sql statement.
+    cursor.execute(sql,(add_name, add_password))
+    connection.commit()
+
+    return render_template("user.html",title = "Homepage")
