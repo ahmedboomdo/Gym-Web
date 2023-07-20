@@ -49,19 +49,18 @@ def data():
     add_user("User", connection, username, password)
     return render_template("login.html",title = "Log in")
 
-
-if __name__ == '__main__':
-    app.run(debug = True)
-
 @app.route('/User/<int.id>')
 def User(id):
     connection = sqlite3.connect(DATABASE_FILE)
     #connect the cursor
     cursor = connection.cursor()
     #SQL statment 
-    sql = ('SELECT name FROM pizza where id=?')(id)
+    sql = ('SELECT name FROM user where id=?')(id)
     #execute the sql statement.
     cursor.execute(sql,(add_name, add_password))
     connection.commit()
 
     return render_template("user.html",title = "Homepage")
+
+if __name__ == '__main__':
+    app.run(debug = True)
