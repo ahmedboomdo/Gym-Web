@@ -49,18 +49,20 @@ def data():
     add_user("User", connection, username, password)
     return render_template("login.html",title = "Log in")
 
-@app.route('/User/<int.id>')
-def User(id):
-    connection = sqlite3.connect(DATABASE_FILE)
+@app.route('/user/<int:id>')
+def user(id):
+    conn = sqlite3.connect(DATABASE_FILE)
     #connect the cursor
-    cursor = connection.cursor()
+    cursor = conn.cursor()
     #SQL statment 
-    sql = ('SELECT name FROM user where id=?')(id)
-    #execute the sql statement.
-    cursor.execute(sql,(add_name, add_password))
-    connection.commit()
+    cursor.execute('SELECT * FROM user where id=?',(id,))
+    user = cursor.fetchone()
 
-    return render_template("user.html",title = "Homepage")
+    #sql = ('SELECT name FROM user where id=?'(id))
+    #execute the sql statement.
+    #cursor.execute(sql,())
+    #connection.commit()
+    return render_template("user.html",user=user, title = "Homepage")
 
 if __name__ == '__main__':
     app.run(debug = True)
