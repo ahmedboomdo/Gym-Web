@@ -3,10 +3,10 @@ import sqlite3
 #preformed all imports
 
 #variables
-DATABASE_FILE = "Database\gym-database.db"
+DATABASE_FILE = "/Users/ahmedabdelfadil/Desktop/Gym-Web/Database/gym-database.db"
 form = None
 
-#creating functions
+#Functions
 def add_user(table_name,connection, add_name, add_password):
     '''Add items to database'''
     connection = sqlite3.connect(DATABASE_FILE)
@@ -48,11 +48,12 @@ def signup():
     return render_template('signup.html',title = "Sign in")
 
 
-
+#creating login page route
 @app.route("/login")
 def login():
     return render_template("login.html",title = "Log in")
 
+#ustillizing the add_user function
 @app.route("/add_user")
 def data():
     username = request.args.get('username')
@@ -60,27 +61,26 @@ def data():
     add_user("User", connection, username, password)
     return render_template("login.html",title = "Log in")
 
+#creating the dashboard 
 @app.route('/user/<int:id>')
 def user(id):
     conn = sqlite3.connect(DATABASE_FILE)
     #connect the cursor
     cursor = conn.cursor()
     #SQL statment 
-    cursor.execute('SELECT * FROM user where id=?',(id,))
+    cursor.execute('SELECT * FROM User where id=?',(id,))
     user = cursor.fetchone()
-
-    #sql = ('SELECT name FROM user where id=?'(id))
-    #execute the sql statement.
-    #cursor.execute(sql,())
-    #connection.commit()
     return render_template("user.html",user=user, title = "Homepage")
 
-@app.route("/user/lift/")
-def lift():
+#creating a way to add excercises to database using the function
+@app.route("/add_lift")
+def lift_data():
     name = request.args.get("name")
     description = request.args.get("description")
     weight = request.args.get("weight")
-    add_user(connection, name, weight, description)
+    add_lift(connection, name, weight, description)
+    return render_template("lift.html", title="Add Lift")
+    
 
 
 
