@@ -18,12 +18,20 @@ def add_user(table_name,connection, add_name, add_password):
     cursor.execute(sql,(add_name, add_password))
     connection.commit()
 
-def add_lift("Excercise". connection, lift_name, weight, description):
+def add_lift( connection, lift_name, weight, description):
     """add a Excercise"""
     connection = sqlite3.connect(DATABASE_FILE)
+    #connecting cursor
+    cursor = connection.cursor()
+    #SQL statement
+    sql=f"INSERT INTO Excercise (name, weight, description) VALUES(?,?,?)"
+    cursor.execute(sql,(lift_name, weight, description))
+    connection.commit()
 
 with sqlite3.connect(DATABASE_FILE) as connection:
     pass
+
+
 
 app = Flask(__name__)
 
@@ -49,7 +57,6 @@ def login():
 def data():
     username = request.args.get('username')
     password = request.args.get('password')
-    print(username, password, connection)
     add_user("User", connection, username, password)
     return render_template("login.html",title = "Log in")
 
@@ -67,6 +74,16 @@ def user(id):
     #cursor.execute(sql,())
     #connection.commit()
     return render_template("user.html",user=user, title = "Homepage")
+
+@app.route("/user/lift/")
+def lift():
+    name = request.args.get("name")
+    description = request.args.get("description")
+    weight = request.args.get("weight")
+    add_user(connection, name, weight, description)
+
+
+
 
 if __name__ == '__main__':
     app.run(debug = True)
