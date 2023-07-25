@@ -1,8 +1,11 @@
 {%extends 'layout.html'%}
 {%block content%}
+<h1>{{user[1]}}'s Dashboard</h1>
+<br>
+<h2>Your lifts</h2>
 {%for item in results%}
     {{ item[1] }} <br/>
     <h2><a href="/user/{{name[0]}}">{{item[1]}}</a></h2><p>{{item[2]}}</p>
-<h1>your homepage name<h1>
+
 {% endfor %}
 {%endblock%}

@@ -18,6 +18,10 @@ def add_user(table_name,connection, add_name, add_password):
     cursor.execute(sql,(add_name, add_password))
     connection.commit()
 
+def add_lift("Excercise". connection, lift_name, weight, description):
+    """add a Excercise"""
+    connection = sqlite3.connect(DATABASE_FILE)
+
 with sqlite3.connect(DATABASE_FILE) as connection:
     pass
 
