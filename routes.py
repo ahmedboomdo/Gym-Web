@@ -33,6 +33,26 @@ def add_lift( connection, lift_name, weight, description):
     cursor.execute(sql,(lift_name, weight, description))
     connection.commit()
 
+def search(connection, username, password):
+    """Check if username and password exist in the database."""
+    cursor = connection.cursor()
+    sql = "SELECT * FROM User WHERE name = ?"
+    cursor.execute(sql, (username,))
+    user = cursor.fetchone()  # Fetch the first row from the result set
+    if user:
+        # User with the provided username exists, now verify the password
+        stored_password = user[2]  # declaring stored password
+        if password == stored_password: #checking if the password is the same as the stored password
+            print("User exists and password is correct.")
+        else:
+            print("User exists, but password is incorrect.")
+    else:
+        print("User does not exist.")
+    
+         
+    
+
+
 with sqlite3.connect(DATABASE_FILE) as connection:
     pass
 
@@ -57,9 +77,14 @@ def signup():
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if request.method == "POST":
-        user =request.form["nm"]
-        session["user"] = user
-        return redirect(url_for("user", usr = user))
+        username = request.args.get('username')
+        password = request.args.get('password')
+        
+        
+        
+        #username = request.args.get.form("username")
+        #session["username"] = username
+        #return redirect(url_for("user", usr = username))
     else:
         if "user" in session:
             return redirect(url_for("user"))

@@ -4,13 +4,13 @@
     <h1>Login</h1>
     <h4>It's free and only takes a minute</h4>
     <!-- following code sourced from https://www.youtube.com/watch?v=-1oE7CWweIE-->
-    <form method="GET">
+    <form action="/user" method="POST">
         <label> User Name</label>
         <!-- Hinting what the expected value is. And creating a placeholder -->
         <input name = 'username' type ="text" placeholder=" "> <br>
         <label> Password </label> 
         <input name = 'password' type ="text" placeholder=" "> <br>
-        <input type = "button" value = "Submit" method="POST">
+        <input type = "button" value = "Submit">
     </form>
     <p>Don't have an account?<a href = '/signup'>Signup here</a><p>
 </div>
