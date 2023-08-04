@@ -1,10 +1,14 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, redirect, request, session, url_for
 import sqlite3
 #preformed all imports
 
 #variables
-DATABASE_FILE = "/Users/ahmedabdelfadil/Desktop/Gym-Web/Database/gym-database.db"
+DATABASE_FILE = "gym-database.db"
 form = None
+
+app = Flask(__name__)
+
+app.secret_key = "shhsecret"
 
 #Functions
 def add_user(table_name,connection, add_name, add_password):
@@ -17,6 +21,7 @@ def add_user(table_name,connection, add_name, add_password):
     #execute the sql statement.
     cursor.execute(sql,(add_name, add_password))
     connection.commit()
+
 
 def add_lift( connection, lift_name, weight, description):
     """add a Excercise"""
@@ -33,7 +38,7 @@ with sqlite3.connect(DATABASE_FILE) as connection:
 
 
 
-app = Flask(__name__)
+
 
 
 #creating a route to the homepage
@@ -49,9 +54,22 @@ def signup():
 
 
 #creating login page route
-@app.route("/login")
+@app.route("/login", methods=["POST", "GET"])
 def login():
-    return render_template("login.html",title = "Log in")
+    if request.method == "POST":
+        user =request.form["nm"]
+        session["user"] = user
+        return redirect(url_for("user", usr = user))
+    else:
+        if "user" in session:
+            return redirect(url_for("user"))
+        return render_template("login.html",title = "Log in")
+    
+#creating a way of logging out
+@app.route ("/logout")
+def logout():
+    session.pop("user",  None)
+    return redirect(url_for("login"))
 
 #ustillizing the add_user function
 @app.route("/add_user")
@@ -62,8 +80,14 @@ def data():
     return render_template("login.html",title = "Log in")
 
 #creating the dashboard 
-@app.route('/user/<int:id>')
-def user(id):
+@app.route('/user')
+def user():
+    if "user" in session:
+        user = session["user"]
+        return f"<h1>{user}<h1>"
+    else:
+        return redirect(url_for("login"))
+
     conn = sqlite3.connect(DATABASE_FILE)
     #connect the cursor
     cursor = conn.cursor()
