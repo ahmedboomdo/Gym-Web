@@ -1,60 +1,64 @@
 from flask import Flask, render_template, redirect, request, session, url_for
 import sqlite3
-#preformed all imports
 
 #variables
 DATABASE_FILE = "gym-database.db"
-form = None
 
 app = Flask(__name__)
+
+User_Authentication = None
 
 app.secret_key = "shhsecret"
 
 #Functions
-def add_user(table_name,connection, add_name, add_password):
-    '''Add items to database'''
-    connection = sqlite3.connect(DATABASE_FILE)
-    #connect the cursor
-    cursor = connection.cursor()
-    #SQL statment 
-    sql = f"INSERT INTO {table_name} (name, password) VALUES(?,?)"
-    #execute the sql statement.
-    cursor.execute(sql,(add_name, add_password))
-    connection.commit()
+def add_user(table_name, add_name, add_password):
+    '''Add items to the database'''
+    with sqlite3.connect(DATABASE_FILE) as connection:
+        # Connect the cursor
+        cursor = connection.cursor()
+        # SQL statement 
+        sql = f"INSERT INTO {table_name} (name, password) VALUES (?, ?)"
+        # Execute the SQL statement
+        cursor.execute(sql, (add_name, add_password))
+        connection.commit()
 
+def add_lift(lift_name, weight, description):
+    """Add an Exercise"""
+    with sqlite3.connect(DATABASE_FILE) as connection:
+        # Connect the cursor
+        cursor = connection.cursor()
+        # SQL statement
+        sql = f"INSERT INTO Excercise (name, weight, description) VALUES (?, ?, ?)"
+        cursor.execute(sql, (lift_name, weight, description))
+        connection.commit()
 
-def add_lift( connection, lift_name, weight, description):
-    """add a Excercise"""
-    connection = sqlite3.connect(DATABASE_FILE)
-    #connecting cursor
-    cursor = connection.cursor()
-    #SQL statement
-    sql=f"INSERT INTO Excercise (name, weight, description) VALUES(?,?,?)"
-    cursor.execute(sql,(lift_name, weight, description))
-    connection.commit()
-
-def search(connection, username, password):
+def search(username, password):
     """Check if username and password exist in the database."""
-    cursor = connection.cursor()
-    sql = "SELECT * FROM User WHERE name = ?"
-    cursor.execute(sql, (username,))
-    user = cursor.fetchone()  # Fetch the first row from the result set
-    if user:
-        # User with the provided username exists, now verify the password
-        stored_password = user[2]  # declaring stored password
-        if password == stored_password: #checking if the password is the same as the stored password
-            print("User exists and password is correct.")
+    with sqlite3.connect(DATABASE_FILE) as connection:
+        cursor = connection.cursor()
+        sql = "SELECT * FROM User WHERE name = ?"
+        cursor.execute(sql, (username,))
+        user = cursor.fetchone()  # Fetch the first row from the result set
+        if user:
+            stored_password = user[2]  # declaring stored password
+            if password == stored_password: 
+                # User exists and password is correct.
+                User_Authenticated = True
+                sql_id = "SELECT id FROM User WHERE name = ?"
+                session["user"] = sql_id 
+                return cursor.execute(sql_id, (username,)), User_Authenticated
+            else:
+                User_Authenticated = False
         else:
-            print("User exists, but password is incorrect.")
-    else:
-        print("User does not exist.")
+            User_Authenticated = False
+
+
+
     
          
     
 
 
-with sqlite3.connect(DATABASE_FILE) as connection:
-    pass
 
 
 
@@ -77,18 +81,22 @@ def signup():
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if request.method == "POST":
-        username = request.args.get('username')
-        password = request.args.get('password')
+        username = request.form.get('username')
+        password = request.form.get('password')
         
+        # Assuming `search` returns User_Authentication and sql_id
+        User_Authentication, sql_id = search(username, password)
         
-        
-        #username = request.args.get.form("username")
-        #session["username"] = username
-        #return redirect(url_for("user", usr = username))
+        if User_Authentication == True:
+            session["user_id"] = sql_id  # Store the user ID in the session
+            return redirect(url_for("get_user_id"))  # Redirect to user route
+        else:
+            return render_template("login.html", title="Log in")  # Return login page with an error message
     else:
-        if "user" in session:
-            return redirect(url_for("user"))
-        return render_template("login.html",title = "Log in")
+        if "user_id" in session:
+            return redirect(url_for("get_user_id"))
+        return render_template("login.html", title="Log in")
+
     
 #creating a way of logging out
 @app.route ("/logout")
@@ -101,17 +109,26 @@ def logout():
 def data():
     username = request.args.get('username')
     password = request.args.get('password')
-    add_user("User", connection, username, password)
+    add_user("User", username, password)
     return render_template("login.html",title = "Log in")
 
 #creating the dashboard 
-@app.route('/user')
-def user():
-    if "user" in session:
-        user = session["user"]
-        return f"<h1>{user}<h1>"
+@app.route('/user/<int:id>')
+def get_user_id():
+    if "user_id" in session:
+        user_id = session["user_id"]
+        
+        # Fetch user details from the database
+        conn = sqlite3.connect(DATABASE_FILE)
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM User WHERE id=?', (user_id,))
+        user = cursor.fetchone()
+        conn.close()
+        
+        return render_template("user.html", user=user, title="Homepage")
     else:
         return redirect(url_for("login"))
+
 
     conn = sqlite3.connect(DATABASE_FILE)
     #connect the cursor
