@@ -12,6 +12,9 @@
         <input name = 'password' type ="text" placeholder=" "> <br>
         <input type = "submit" value = "Submit">
     </form>
+    {% if error %}
+    <div>{{ error }}</div>
+    {% endif %}
     <p>Don't have an account?<a href = '/signup'>Signup here</a><p>
 </div>
 {%endblock%}
