@@ -95,7 +95,7 @@ def login():
             return redirect(url_for("get_user_id"))  # Redirect to user route
             
         else:
-            error_message = "Invalid login credentials. Please try again. usernames"
+            error_message = "Invalid login credentials. Please try again. (usernames and passwords are case senstive)"
             return render_template("login.html", title="Log in", error=error_message)
     else:
         if "user_id" in session:
