@@ -4,6 +4,9 @@
     <h1>Login</h1>
     <h4>It's free and only takes a minute</h4>
     <!-- following code sourced from https://www.youtube.com/watch?v=-1oE7CWweIE-->
+    {% if error %}
+    <div>{{ error }}</div>
+    {% endif %}
     <form action="/login" method="POST">
         <label> User Name</label>
         <!-- Hinting what the expected value is. And creating a placeholder -->
@@ -12,9 +15,7 @@
         <input name = 'password' type ="text" placeholder=" "> <br>
         <input type = "submit" value = "Submit">
     </form>
-    {% if error %}
-    <div>{{ error }}</div>
-    {% endif %}
+    
     <p>Don't have an account?<a href = '/signup'>Signup here</a><p>
 </div>
 {%endblock%}
