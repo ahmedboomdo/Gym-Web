@@ -1,21 +1,23 @@
-{%extends 'layout.html'%}
-{%block content%}
+{% extends 'layout.html' %}
+{% block content %}
 <div>
     <h1>Add Lift</h1>
-    <form action="/add_lift">
-        
+    <form action="{{ url_for('add_lift_route') }}" method="POST">
+
         <label> Lift name</label>
         <input name="name" type="text" placeholder=" "><br>
         
         <label> Lift description </label>
-        <input name="description" type ="text" placeholder=" "><br>
+        <input name="description" type="text" placeholder=" "><br>
         
         <label> weight</label>
-        <input name="weight" type ="integer" placeholder=" "><br>
+        <input name="weight" type="number" placeholder=" "><br>
+    
+        <input type="hidden" name="lift_id" value="{{ session['user_id'] }}">
         
-        <input type="submit" value = "Create lift"><br>
-        
+        <input type="submit" value="Create lift"><br>
     </form>
-    <p>return to <a href = '/user/11'>Dashboard</a>?<p>
+    
+    <p>return to <a href="/user/11">Dashboard</a>?</p> <!-- Fix the closing <p> tag -->
 </div>
-{%endblock%}
+{% endblock %}
