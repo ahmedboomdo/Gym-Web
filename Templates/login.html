@@ -1,21 +1,19 @@
-{%extends 'layout.html'%}
-{%block content%}
-<div>
+{% extends 'layout.html' %}
+{% block content %}
+<div class="login-container">
+    <p style="color: red;">{{ error_message }}</p>
     <h1>Login</h1>
     <h4>It's free and only takes a minute</h4>
-    <!-- following code sourced from https://www.youtube.com/watch?v=-1oE7CWweIE-->
     {% if error %}
     <div>{{ error }}</div>
     {% endif %}
     <form action="/login" method="POST">
-        <label> User Name</label>
-        <!-- Hinting what the expected value is. And creating a placeholder -->
-        <input name = 'username' type ="text" placeholder=" "> <br>
-        <label> Password </label> 
-        <input name = 'password' type ="text" placeholder=" "> <br>
-        <input type = "submit" value = "Submit">
+        <label for="username">User Name</label>
+        <input type="text" id="username" name="username" placeholder=" " required><br>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder=" " required><br>
+        <input type="submit" value="Submit">
     </form>
-    
-    <p>Don't have an account?<a href = '/signup'>Signup here</a><p>
+    <p>Don't have an account? <a href="/signup">Sign up here</a></p>
 </div>
-{%endblock%}
+{% endblock %}

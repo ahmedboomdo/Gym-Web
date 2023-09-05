@@ -1,9 +1,14 @@
 {%extends 'layout.html'%}
 {%block content%}
 <div>
+    <div class="login-container">
     <h1>Sign Up</h1>
+    <p style="color: red;">{{ error_message }}</p>
     <h4>It's free and only takes a minute</h4>
     <!-- following code sourced from https://www.youtube.com/watch?v=-1oE7CWweIE-->
+    {% if error %}
+    <div>{{ error }}</div>
+    {% endif %}
     <form action="/add_user">
         <label> User Name</label>
         <!-- Hinting what the expected value type is. And creating a placeholder -->
@@ -13,7 +18,7 @@
         <input name="password" type ="text" placeholder=" "><br>
 
         <label> Confirm Password </label>
-        <input type ="text" placeholder=" "><br>
+        <input name="confirm" type ="text" placeholder=" "><br>
         
         <input type = "submit">
     </form>

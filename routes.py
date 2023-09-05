@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, request, session, url_for
 import sqlite3
+import hashlib
 
 # Variables
 DATABASE_FILE = "gym-database.db"
@@ -9,8 +10,15 @@ app = Flask(__name__)
 app.secret_key = "shhsecret"
 
 # Functions
+#sqlite3.connect("gym-database.db?mode=WAL", check_same_thread=False)
 
 #function to add a user to database after sign in
+def hash_password(password):
+    salt = b'some_random_salt'  # You should use a random salt
+    password = password.encode('utf-8')
+    hashed_password = hashlib.sha256(salt + password).hexdigest()
+    return hashed_password
+
 def add_user(table_name, add_name, add_password):
     '''Add items to the database'''
     with sqlite3.connect(DATABASE_FILE) as connection:
@@ -40,14 +48,13 @@ def add_lift(username, lift_name, weight, description):
         cursor.execute(user_id_sql, (username,))
         user_id = cursor.fetchone()[0]
 
+
         # Create a relation between the user and the added lift
-        user_lift_relation_sql = "INSERT INTO UserLifts (user_id, lift_id) VALUES (?, ?)"
+        user_lift_relation_sql = "INSERT INTO UserExcercise (user_id, lift_id) VALUES (?, ?)"
         cursor.execute(user_lift_relation_sql, (user_id, lift_id))
         connection.commit()
 
 
-        
-        
 
 #searching if a user is in a database
 def search(username, password):
@@ -72,7 +79,6 @@ def search(username, password):
         else:
             print("user doesn't exist")
             return False, None  # Return False for authentication
-            
 @app.route('/user/<int:user_id>')
 def get_user_id(user_id):
     if "user_id" in session and session["user_id"] == user_id:
@@ -80,10 +86,11 @@ def get_user_id(user_id):
             cursor = connection.cursor()
             cursor.execute('SELECT * FROM User WHERE id=?', (user_id,))
             user = cursor.fetchone()
-            # Fetch exercises associated with the user
+            print("User:", user)
             cursor.execute('SELECT * FROM Excercise WHERE user_id=?', (user_id,))
-            excercises = cursor.fetchall()
-        return render_template("user.html", user=user, excercises=excercises, title="Homepage")
+            excercises = cursor.fetchall() 
+            print("Exercises:", excercises) 
+        return render_template("user.html", user=user, excercises=excercises, title="Dashboard")
     else:
         return redirect(url_for("login"))
 
@@ -113,19 +120,20 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         User_Authentication, sql_id = search(username, password)
-        print(username,password)
+        print(username, password)
         if User_Authentication == True:
             session["user_id"] = sql_id  # Store the user ID in the session
             print("user authenticated in login function")
-            return redirect(url_for("get_user_id"))  # Redirect to user route
-            
+            return redirect(url_for("get_user_id", user_id=sql_id))
         else:
-            error_message = "Invalid login credentials. Please try again. (usernames and passwords are case senstive)"
+            error_message = "Invalid login credentials. Please try again. (usernames and passwords are case sensitive)"
             return render_template("login.html", title="Log in", error=error_message)
     else:
         if "user_id" in session:
-            return redirect(url_for("get_user_id"))
+            return redirect(url_for("get_user_id", user_id=session["user_id"]))
         return render_template("login.html", title="Log in")
+
+        
 
 @app.route("/logout")
 def logout():
@@ -136,37 +144,52 @@ def logout():
 def add_user_route():
     username = request.args.get('username')
     password = request.args.get('password')
-    add_user("User", username, password)
-    return render_template("login.html", title="Log in")
+    confirm_password = request.args.get('confirm')
+    
+    with sqlite3.connect(DATABASE_FILE) as connection:
+        cursor = connection.cursor()
+        sql = "SELECT * FROM User WHERE name = ?"
+        cursor.execute(sql, (username,))
+        user = cursor.fetchone()  # Fetch the first row from the result set
+        if username == user: #checking that username isn't already in the database
+            error_message = "Username is taken please use another name"
+            return render_template("signup.html", title="Signup in", error_message=error_message)
+        if password == confirm_password:
+            cursor.execute("INSERT INTO User (name,password) VALUES (?, ?)",(username, password))
+            connection.commit
+            return render_template("login.html", title="Log in")
+        else:
+            error_message = "Your confirmed password is incorrect try again"
+            return render_template("signup.html", title="Signup in", error_message=error_message)
+        
+
+        
 
     
 #creating a way to add excercises to database using the function
-@app.route('/add_lift', methods=['POST','GET'])
+@app.route('/add_lift', methods=['GET', 'POST'])
 def add_lift_route():
-    if 'user_id' in session:  # Check if the user is logged in
-        user_id = session['user_id']
+    if 'user_id' in session:
+        user_id = session['user_id']  # Get the user's ID from the session
 
-        # Extract form data
-        lift_name = request.form.get('name')
-        weight = request.form.get('weight')
-        description = request.form.get('description')
+        if request.method == 'POST':
+            lift_name = request.form.get('name')
+            weight = request.form.get('weight')
+            description = request.form.get('description')
 
-        # Retrieve the username from the database based on the user ID
-        with sqlite3.connect(DATABASE_FILE) as connection:
-            cursor = connection.cursor()
-            username_query = "SELECT name FROM User WHERE id = ?"
-            cursor.execute(username_query, (user_id,))
-            username = cursor.fetchone()[0]
+            with sqlite3.connect(DATABASE_FILE) as connection:
+                cursor = connection.cursor()
 
-        # Call the function to add the lift and associate with the user
-        add_lift(username, lift_name, weight, description)
-
-        return redirect(url_for('get_user_id', user_id=user_id))  # Redirect to dashboard
+                # Insert the Excercise data including the user's ID
+                sql = "INSERT INTO Excercise (name, description, weight, user_id) VALUES (?, ?, ?, ?)"
+                cursor.execute(sql, (lift_name, description, weight, user_id))
+                connection.commit()
+            return redirect(url_for('get_user_id', user_id=user_id))
+        
+        return render_template('add_lift.html', title='Add Lift')
     else:
         return redirect(url_for('login'))
 
 
-
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True) 
