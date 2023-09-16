@@ -1,6 +1,5 @@
 from flask import Flask, render_template, redirect, request, session, url_for
 import sqlite3
-import hashlib
 
 # Variables
 DATABASE_FILE = "gym-database.db"
@@ -13,12 +12,6 @@ app.secret_key = "shhsecret"
 #sqlite3.connect("gym-database.db?mode=WAL", check_same_thread=False)
 
 #function to add a user to database after sign in
-def hash_password(password):
-    salt = b'some_random_salt'  # You should use a random salt
-    password = password.encode('utf-8')
-    hashed_password = hashlib.sha256(salt + password).hexdigest()
-    return hashed_password
-
 def add_user(table_name, add_name, add_password):
     '''Add items to the database'''
     with sqlite3.connect(DATABASE_FILE) as connection:
@@ -151,7 +144,7 @@ def add_user_route():
         sql = "SELECT * FROM User WHERE name = ?"
         cursor.execute(sql, (username,))
         user = cursor.fetchone()  # Fetch the first row from the result set
-        if username == user: #checking that username isn't already in the database
+        if username == user[1]: #checking that username isn't already in the database
             error_message = "Username is taken please use another name"
             return render_template("signup.html", title="Signup in", error_message=error_message)
         if password == confirm_password:
