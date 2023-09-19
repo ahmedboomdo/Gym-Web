@@ -10,6 +10,12 @@ h1 {
     margin-bottom: 10px;
 }
 
+h2 {
+    text-align: center;
+}
+
+p {text-align: center}
+
 /* Style the table */
 .exercise-table {
     border-collapse: collapse;
@@ -133,3 +139,4 @@ h1 {
     text-decoration: underline;
 }
 
+.featured_workouts {text-align: center;}
