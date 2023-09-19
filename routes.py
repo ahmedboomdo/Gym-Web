@@ -17,6 +17,7 @@ def add_user(table_name, add_name, add_password):
         cursor.execute(sql, (add_name, add_password))
         connection.commit()
 
+
 def add_lift(username, lift_name, weight, description):
     """Add an exercise."""
     with sqlite3.connect(database_file) as connection:
@@ -33,6 +34,7 @@ def add_lift(username, lift_name, weight, description):
         user_lift_relation_sql = "INSERT INTO UserExercise (user_id, lift_id) VALUES (?, ?)"
         cursor.execute(user_lift_relation_sql, (user_id, lift_id))
         connection.commit()
+
 
 def search(username, password):
     """Check if username and password exist in the database."""
@@ -54,6 +56,7 @@ def search(username, password):
             print("User doesn't exist")
             return False, None
 
+
 @app.route('/user/<int:user_id>')
 def get_user_id(user_id):
     if "user_id" in session and session["user_id"] == user_id:
@@ -62,27 +65,33 @@ def get_user_id(user_id):
             cursor.execute('SELECT * FROM User WHERE id=?', (user_id,))
             user = cursor.fetchone()
             print("User:", user)
+
             cursor.execute('SELECT * FROM Exercise WHERE user_id=?', (user_id,))
             exercises = cursor.fetchall()
             print("Exercises:", exercises)
+
         return render_template("user.html", user=user, exercises=exercises, title="Dashboard")
     else:
         return redirect(url_for("login"))
 
+
 def user_lift(sql_id, lift_id):
     with sqlite3.connect(database_file) as connection:
         cursor = connection.cursor()
-        sql = f"INSERT INTO Exercise (exercise_id, set_id) VALUES (?, ?, ?)"
+        sql = "INSERT INTO Exercise (exercise_id, set_id) VALUES (?, ?, ?)"
         cursor.execute(sql, (sql_id, lift_id))
         connection.commit()
+
 
 @app.route("/")
 def home():
     return render_template("home.html", title="Home Page")
 
+
 @app.route("/signup")
 def signup():
     return render_template('signup.html', title="Sign in")
+
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -103,17 +112,18 @@ def login():
             return redirect(url_for("get_user_id", user_id=session["user_id"]))
         return render_template("login.html", title="Log in")
 
+
 @app.route("/logout")
 def logout():
     session.pop("user_id", None)
     return redirect(url_for("login"))
+
 
 @app.route("/add_user")
 def add_user_route():
     username = request.args.get('username')
     password = request.args.get('password')
     confirm_password = request.args.get('confirm')
-    
     with sqlite3.connect(database_file) as connection:
         cursor = connection.cursor()
         sql = "SELECT * FROM User WHERE name = ?"
@@ -129,6 +139,7 @@ def add_user_route():
         else:
             error_message = "Your confirmed password is incorrect, please try again"
             return render_template("signup.html", title="Sign up", error_message=error_message)
+
 
 @app.route('/add_lift', methods=['GET', 'POST'])
 def add_lift_route():
@@ -151,6 +162,37 @@ def add_lift_route():
         return render_template('add_lift.html', title='Add Lift')
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/edit_lift/<int:lift_id>', methods=['GET', 'POST'])
+def edit_lift_route(lift_id):
+    if 'user_id' in session:
+        user_id = session['user_id']
+
+        if request.method == 'POST':
+            new_weight = request.form.get('weight')
+
+            with sqlite3.connect(database_file) as connection:
+                cursor = connection.cursor()
+
+                # Update the weight for the specified exercise
+                sql = "UPDATE Exercise SET weight = ? WHERE id = ? AND user_id = ?"
+                cursor.execute(sql, (new_weight, lift_id, user_id))
+                connection.commit()
+                return redirect(url_for('get_user_id', user_id=user_id))
+
+        with sqlite3.connect(database_file) as connection:
+            cursor = connection.cursor()
+
+            # Retrieve the exercise details
+            sql = "SELECT * FROM Exercise WHERE id = ? AND user_id = ?"
+            cursor.execute(sql, (lift_id, user_id))
+            exercise = cursor.fetchone()
+
+        return render_template('edit_lift.html', title='Edit Lift', exercise=exercise)
+    else:
+        return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

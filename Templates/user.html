@@ -6,21 +6,25 @@
     <h2>Your Lifts</h2>
     <a href="/add_lift">Add an Exercise</a>
 
-    {% if excercises %}
+    {% if exercises %}
     <table class="exercise-table">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Description</th>
                 <th>Weight</th>
+                <th>Actions</th>  <!-- Add a new column for edit actions -->
             </tr>
         </thead>
         <tbody>
-            {% for exercise in excercises %}
+            {% for exercise in exercises %}
             <tr>
                 <td>{{ exercise[1] }}</td>
                 <td>{{ exercise[2] }}</td>
                 <td>{{ exercise[3] }}</td>
+                <td>
+                    <a href="{{ url_for('edit_lift_route', lift_id=exercise[0]) }}">Edit Weight</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
