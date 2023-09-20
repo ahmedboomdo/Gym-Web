@@ -193,6 +193,28 @@ def edit_lift_route(lift_id):
     else:
         return redirect(url_for('login'))
 
+@app.route('/delete_lift/<int:lift_id>', methods=['POST'])
+def delete_lift_route(lift_id):
+    if 'user_id' in session:
+        user_id = session['user_id']
+
+        with sqlite3.connect(database_file) as connection:
+            cursor = connection.cursor()
+
+            # Check if the exercise with the specified ID belongs to the current user
+            sql_check = "SELECT id FROM Exercise WHERE id = ? AND user_id = ?"
+            cursor.execute(sql_check, (lift_id, user_id))
+            exercise = cursor.fetchone()
+
+            if exercise:
+                # If the exercise belongs to the user, delete it
+                sql_delete = "DELETE FROM Exercise WHERE id = ?"
+                cursor.execute(sql_delete, (lift_id,))
+                connection.commit()
+
+        return redirect(url_for('get_user_id', user_id=user_id))
+
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
