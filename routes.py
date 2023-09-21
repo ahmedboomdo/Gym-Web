@@ -73,15 +73,7 @@ def get_user_id(user_id):
         return render_template("user.html", user=user, exercises=exercises, title="Dashboard")
     else:
         return redirect(url_for("login"))
-
-
-def user_lift(sql_id, lift_id):
-    with sqlite3.connect(database_file) as connection:
-        cursor = connection.cursor()
-        sql = "INSERT INTO Exercise (exercise_id, set_id) VALUES (?, ?, ?)"
-        cursor.execute(sql, (sql_id, lift_id))
-        connection.commit()
-
+    
 
 @app.route("/")
 def home():
