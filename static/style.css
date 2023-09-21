@@ -14,7 +14,20 @@ h2 {
     text-align: center;
 }
 
-p {text-align: center}
+p {
+    width: 80%;
+    text-align: justify;
+    margin: 0 auto;
+}
+
+p:after {
+    content: '';
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    vertical-align: top;
+    height: 0; /* Add this line to create an empty space for centering */
+}
 
 /* Style the table */
 .exercise-table {
@@ -79,6 +92,8 @@ p {text-align: center}
     color: white;
 }
 
+
+/*login page and signup page CSS */
 .login-container {
     max-width: 400px;
     margin: 0 auto;
@@ -141,7 +156,11 @@ p {text-align: center}
 
 .featured_workouts {
     text-align: center;
+    line-height: 1.6;
+    letter-spacing: 1px;
 }
+
+/*The delete button next ot the excercise*/
 .delete_button {
     display: inline;    
     border:none;

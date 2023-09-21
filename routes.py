@@ -105,7 +105,7 @@ def login():
             print("User authenticated in login function")
             return redirect(url_for("get_user_id", user_id=sql_id))
         else:
-            error_message = "Invalid login credentials. Please try again. (Usernames and passwords are case sensitive)"
+            error_message = "Invalid login credentials. Please try again. (Usernames and passwords are case sensitive, spaces also count as cahracters that must be re-entered)"
             return render_template("login.html", title="Log in", error=error_message)
     else:
         if "user_id" in session:
@@ -215,6 +215,23 @@ def delete_lift_route(lift_id):
         return redirect(url_for('get_user_id', user_id=user_id))
 
     return redirect(url_for('login'))
+
+# Custom error handling for page not found errors
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('error.html', error='Page not found'), 404
+
+
+# Custom error handling for 500 (Internal Server Error) error
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_template('error.html', error='Internal server error'), 500
+
+
+# Custom error handling for other unexpected errors
+@app.errorhandler(Exception)
+def unexpected_error(error):
+    return render_template('error.html', error='Something went wrong'), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
