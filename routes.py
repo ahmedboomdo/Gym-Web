@@ -227,5 +227,6 @@ def internal_server_error(error):
 def unexpected_error(error):
     return render_template('error.html', error='Something went wrong'), 500
 
+
 if __name__ == '__main__':
     app.run(debug=True)
