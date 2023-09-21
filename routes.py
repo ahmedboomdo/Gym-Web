@@ -185,6 +185,7 @@ def edit_lift_route(lift_id):
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/delete_lift/<int:lift_id>', methods=['POST'])
 def delete_lift_route(lift_id):
     if 'user_id' in session:
@@ -207,6 +208,7 @@ def delete_lift_route(lift_id):
         return redirect(url_for('get_user_id', user_id=user_id))
 
     return redirect(url_for('login'))
+
 
 # Custom error handling for page not found errors
 @app.errorhandler(404)
